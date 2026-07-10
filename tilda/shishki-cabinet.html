@@ -1,0 +1,72 @@
+<!-- SHISHKI CABINET PAGE / TILDA T123 / STABLE BASELINE -->
+<div id="shishkiCabinet" class="shk-cabinet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+    .shk-cabinet{min-height:100vh;padding:28px 18px 70px;font-family:Inter,Arial,sans-serif;color:#06291c;background:radial-gradient(circle at 12% 0%,rgba(223,248,175,.55),transparent 28%),linear-gradient(180deg,#f7f3e8 0%,#edf3df 58%,#fbf8ef 100%)}
+    .shk-wrap{max-width:1180px;margin:0 auto}.shk-hidden{display:none!important}.shk-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;padding:14px 18px;border-radius:28px;background:#06291c;color:#fff}.shk-logo{height:42px}.shk-btn{min-height:46px;padding:0 18px;border:0;border-radius:999px;font:800 14px Inter,Arial;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.shk-btn-dark{background:#06291c;color:#fff}.shk-btn-light{background:#fff;color:#06291c}.shk-btn-green{background:#dff8af;color:#06291c}.shk-hero{padding:34px;border-radius:34px;background:linear-gradient(90deg,rgba(6,41,28,.96),rgba(6,41,28,.72)),url('https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1600&auto=format&fit=crop') center/cover;color:#fff;box-shadow:0 30px 90px rgba(3,31,21,.16)}.shk-hero h1{margin:0;font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.07em;font-weight:900}.shk-hero p{margin:14px 0 0;max-width:700px;color:rgba(255,255,255,.74);font-size:17px;line-height:1.5;font-weight:600}.shk-grid{display:grid;gap:16px}.shk-stats{grid-template-columns:repeat(4,1fr);margin:18px 0}.shk-card{padding:22px;border-radius:26px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.82);box-shadow:0 18px 54px rgba(6,41,28,.07)}.shk-stat small,.shk-card small{display:block;color:#6c7a71;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.shk-stat strong{display:block;margin-top:10px;font-size:32px;line-height:1;font-weight:900;letter-spacing:-.05em}.shk-stat span{display:block;margin-top:7px;color:#6c7a71;font-size:13px;font-weight:700}.shk-section{margin-top:16px}.shk-section h2{margin:0 0 10px;font-size:32px;line-height:1;letter-spacing:-.055em;font-weight:900}.shk-section p{margin:0 0 16px;color:#6c7a71;font-size:15px;line-height:1.45;font-weight:600}.shk-socials{grid-template-columns:repeat(5,1fr)}.shk-social{display:flex;flex-direction:column;gap:12px;min-height:210px}.shk-social h3{margin:0;font-size:20px;line-height:1.05;letter-spacing:-.04em}.shk-status{width:max-content;min-height:30px;padding:0 11px;border-radius:999px;display:inline-flex;align-items:center;font-size:12px;font-weight:900}.ok{color:#0f7a4b;background:rgba(15,122,75,.1)}.wait{color:#a76b11;background:rgba(167,107,17,.1)}.bad{color:#b34a36;background:rgba(179,74,54,.1)}.neutral{color:#6c7a71;background:rgba(6,41,28,.07)}.shk-alert{padding:18px;border-radius:20px;background:#fff;color:#b34a36;font-weight:800}.shk-countdown{font-size:13px;color:#6c7a71;font-weight:700}.shk-loading{min-height:70vh;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}.shk-prizes{grid-template-columns:repeat(5,1fr)}@media(max-width:980px){.shk-stats,.shk-socials,.shk-prizes{grid-template-columns:1fr 1fr}}@media(max-width:640px){.shk-top{border-radius:22px}.shk-user{display:none}.shk-stats,.shk-socials,.shk-prizes{grid-template-columns:1fr}.shk-hero{padding:26px}.shk-logo{height:34px}}
+  </style>
+
+  <div class="shk-wrap">
+    <div id="loading" class="shk-loading">Загружаем личный кабинет...</div>
+    <div id="app" class="shk-hidden">
+      <header class="shk-top">
+        <img class="shk-logo" src="https://static.tildacdn.com/tild3435-3366-4030-b036-613839613732/Group_1321316737.svg" alt="КП ШИШКИ">
+        <div><span class="shk-user" id="userName">Риелтор</span> <button class="shk-btn shk-btn-light" id="logoutBtn">Выйти</button></div>
+      </header>
+
+      <section class="shk-hero">
+        <h1>Личный кабинет участника</h1>
+        <p id="userText">Здесь отображаются ваши подписки, публикации, сделки и билеты на розыгрыш участка КП «ШИШКИ».</p>
+      </section>
+
+      <section class="shk-grid shk-stats">
+        <div class="shk-card shk-stat"><small>Билеты</small><strong id="ticketsCount">0</strong><span>участвуют в розыгрыше</span></div>
+        <div class="shk-card shk-stat"><small>Публикации</small><strong id="pubsCount">0</strong><span>подтверждённых дней</span></div>
+        <div class="shk-card shk-stat"><small>Сделки</small><strong id="dealsCount">0</strong><span>подтверждённых продаж</span></div>
+        <div class="shk-card shk-stat"><small>Розыгрыш</small><strong style="font-size:26px">30.09.2026</strong><span class="shk-countdown" id="countdown">—</span></div>
+      </section>
+
+      <section class="shk-card shk-section">
+        <h2>Подписки</h2>
+        <p>Подпишитесь на все 5 площадок и нажмите «Проверить». После подтверждения администратором всех 5 подписок начисляется 1 билет.</p>
+        <div class="shk-grid shk-socials" id="socialsList"></div>
+      </section>
+
+      <section class="shk-card shk-section">
+        <h2>Призы</h2>
+        <div class="shk-grid shk-prizes">
+          <div class="shk-card"><small>20 дней</small><h3>3 000 ₽</h3><span class="shk-status neutral" id="fuel20">не доступно</span></div>
+          <div class="shk-card"><small>30 дней</small><h3>1 билет</h3><span class="shk-status neutral" id="fuel30">не доступно</span></div>
+          <div class="shk-card"><small>OZON</small><h3>20 000 ₽</h3><span class="shk-status neutral">розыгрыш</span></div>
+          <div class="shk-card"><small>OZON</small><h3>30 000 ₽</h3><span class="shk-status neutral">розыгрыш</span></div>
+          <div class="shk-card"><small>Главный приз</small><h3>Участок КП «ШИШКИ»</h3><span class="shk-status neutral">розыгрыш</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const API={me:'https://wow.shishki72.ru/shishki_api/me.php',subscriptionCheck:'https://wow.shishki72.ru/shishki_api/subscription-check.php'};
+      const LOGIN='https://шишки.рус/shishki-login';
+      const SOCIALS=[
+        ['max','MAX','https://max.ru/id8603207560_biz'],
+        ['vk','ВКонтакте','https://vk.ru/poselok_shishki'],
+        ['telegram','Telegram КП','https://t.me/poselok_shishki'],
+        ['telegram_agents','Telegram агенты','https://t.me/shishki_agents'],
+        ['instagram','Instagram','https://www.instagram.com/shishki72.ru']
+      ];
+      const $=id=>document.getElementById(id);
+      const token=()=>localStorage.getItem('shishki_token')||sessionStorage.getItem('shishki_token');
+      const auth=()=>({'Content-Type':'application/json','Authorization':'Bearer '+token()});
+      function statusHtml(status){const s=String(status||'not_requested'); if(s==='confirmed')return '<span class="shk-status ok">подтверждено</span>'; if(s==='pending')return '<span class="shk-status wait">на проверке</span>'; if(s==='rejected')return '<span class="shk-status bad">отклонено</span>'; return '<span class="shk-status neutral">не проверено</span>';}
+      function showError(msg){$('loading').innerHTML='<div class="shk-alert">'+msg+'<br><br><a class="shk-btn shk-btn-dark" href="'+LOGIN+'">Войти заново</a></div>';}
+      function startCountdown(){const end=new Date('2026-09-29T23:59:00+05:00').getTime(); function tick(){let diff=end-Date.now(); if(diff<0)diff=0; const d=Math.floor(diff/86400000); const h=Math.floor(diff%86400000/3600000); const m=Math.floor(diff%3600000/60000); $('countdown').textContent='До завершения приёма действий: '+d+' д. '+h+' ч. '+m+' мин.';} tick(); setInterval(tick,60000);}
+      function render(data){const p=data.participant||{},s=data.stats||{},subs=data.subscriptions||{}; $('userName').textContent=p.name||'Риелтор'; $('userText').textContent=(p.name||'Риелтор')+' · '+(p.agency||'Агентство не указано')+' · '+(p.phone||''); $('ticketsCount').textContent=s.tickets_count||0; $('pubsCount').textContent=s.publications_confirmed||0; $('dealsCount').textContent=s.deals_confirmed||0; $('fuel20').outerHTML=statusHtml(s.fuel20_status); $('fuel30').outerHTML=statusHtml(s.fuel30_status); $('socialsList').innerHTML=SOCIALS.map(([key,title,url])=>'<div class="shk-card shk-social"><small>'+title+'</small><h3>'+title+'</h3>'+statusHtml(subs[key])+'<a class="shk-btn shk-btn-green" target="_blank" rel="noopener" href="'+url+'">Подписаться</a><button class="shk-btn shk-btn-dark" data-platform="'+key+'">Проверить</button></div>').join(''); document.querySelectorAll('[data-platform]').forEach(btn=>btn.addEventListener('click',()=>check(btn.dataset.platform,btn))); $('loading').classList.add('shk-hidden'); $('app').classList.remove('shk-hidden'); startCountdown();}
+      async function load(){if(!token()){location.href=LOGIN;return;} try{const r=await fetch(API.me,{headers:auth()}); const j=await r.json().catch(()=>({})); if(!r.ok||j.success===false)throw new Error(j.message||'Не удалось загрузить кабинет'); render(j);}catch(e){console.error(e); showError(e.message||'Ошибка загрузки кабинета');}}
+      async function check(platform,btn){btn.disabled=true; btn.textContent='Отправляем...'; try{const r=await fetch(API.subscriptionCheck,{method:'POST',headers:auth(),body:JSON.stringify({platform})}); const j=await r.json().catch(()=>({})); if(!r.ok||j.success===false)throw new Error(j.message||'Ошибка проверки'); await load();}catch(e){alert(e.message||'Ошибка проверки');} finally{btn.disabled=false; btn.textContent='Проверить';}}
+      $('logoutBtn').addEventListener('click',()=>{localStorage.removeItem('shishki_token');sessionStorage.removeItem('shishki_token');location.href=LOGIN;});
+      load();
+    })();
+  </script>
+</div>
