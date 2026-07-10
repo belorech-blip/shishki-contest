@@ -28,6 +28,7 @@ try {
     $confirmedPublications = app_count($pdo, "SELECT COUNT(DISTINCT publish_date) FROM publications WHERE participant_id = :participant_id AND status = 'confirmed'", [':participant_id' => $participantId]);
     $confirmedDeals = app_count($pdo, "SELECT COUNT(*) FROM deals WHERE participant_id = :participant_id AND status = 'confirmed'", [':participant_id' => $participantId]);
     $ticketsCount = app_count($pdo, "SELECT COUNT(*) FROM tickets WHERE participant_id = :participant_id", [':participant_id' => $participantId]);
+    $publications30Status = $confirmedPublications >= 30 ? 'available' : 'pending';
 
     json_response([
         'success' => true,
@@ -50,7 +51,8 @@ try {
             'draw_date' => '30.09.2026',
             'countdown_target' => '2026-09-29T23:59:00+05:00',
             'fuel20_status' => $confirmedPublications >= 20 ? 'available' : 'pending',
-            'publications30_status' => $confirmedPublications >= 30 ? 'available' : 'pending',
+            'publications30_status' => $publications30Status,
+            'fuel30_status' => $publications30Status,
             'ozon20_status' => 'draw',
             'ozon30_status' => 'draw',
             'plot_status' => 'draw'
