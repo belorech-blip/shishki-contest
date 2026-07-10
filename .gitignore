@@ -1,0 +1,15 @@
+# Secrets
+backend/shishki_api/config.php
+.env
+*.env
+
+# OS / editor
+.DS_Store
+__MACOSX/
+.vscode/
+.idea/
+
+# Logs / temp
+*.log
+tmp/
+.cache/
