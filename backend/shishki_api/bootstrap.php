@@ -94,44 +94,29 @@ function app_get_bearer_token(): string
 
 function app_table_exists(PDO $pdo, string $table): bool
 {
-    $stmt = $pdo->prepare(
-        'SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table_name'
-    );
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table_name');
     $stmt->execute([':table_name' => $table]);
     return (int)$stmt->fetchColumn() > 0;
 }
 
 function app_column_exists(PDO $pdo, string $table, string $column): bool
 {
-    $stmt = $pdo->prepare(
-        'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name'
-    );
-    $stmt->execute([
-        ':table_name' => $table,
-        ':column_name' => $column,
-    ]);
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name');
+    $stmt->execute([':table_name' => $table, ':column_name' => $column]);
     return (int)$stmt->fetchColumn() > 0;
 }
 
 function app_column_type(PDO $pdo, string $table, string $column): string
 {
-    $stmt = $pdo->prepare(
-        'SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name LIMIT 1'
-    );
-    $stmt->execute([
-        ':table_name' => $table,
-        ':column_name' => $column,
-    ]);
+    $stmt = $pdo->prepare('SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name LIMIT 1');
+    $stmt->execute([':table_name' => $table, ':column_name' => $column]);
     return (string)($stmt->fetchColumn() ?: '');
 }
 
 function app_enum_values(PDO $pdo, string $table, string $column): array
 {
     $type = app_column_type($pdo, $table, $column);
-    if ($type === '') {
-        return [];
-    }
-
+    if ($type === '') return [];
     preg_match_all("/'((?:[^'\\\\]|\\\\.)*)'/", $type, $matches);
     return array_map('stripcslashes', $matches[1] ?? []);
 }
@@ -164,42 +149,24 @@ function app_ensure_core_schema(PDO $pdo): void
 function app_current_participant(PDO $pdo): array
 {
     $token = app_get_bearer_token();
+    if ($token === '') json_response(['success' => false, 'message' => 'Токен не передан'], 401);
 
-    if ($token === '') {
-        json_response(['success' => false, 'message' => 'Токен не передан'], 401);
-    }
-
-    $stmt = $pdo->prepare(
-        "SELECT id, name, phone, agency, campaign, source, status, created_at FROM participants WHERE token = :token AND status = 'active' LIMIT 1"
-    );
+    $stmt = $pdo->prepare("SELECT id, name, phone, agency, campaign, source, status, created_at FROM participants WHERE token = :token AND status = 'active' LIMIT 1");
     $stmt->execute([':token' => $token]);
     $participant = $stmt->fetch();
-
-    if (!$participant) {
-        json_response(['success' => false, 'message' => 'Участник не найден или токен устарел'], 401);
-    }
-
+    if (!$participant) json_response(['success' => false, 'message' => 'Участник не найден или токен устарел'], 401);
     return $participant;
 }
 
 function app_current_admin(PDO $pdo): array
 {
     $token = app_get_bearer_token();
+    if ($token === '') json_response(['success' => false, 'message' => 'Токен администратора не передан'], 401);
 
-    if ($token === '') {
-        json_response(['success' => false, 'message' => 'Токен администратора не передан'], 401);
-    }
-
-    $stmt = $pdo->prepare(
-        "SELECT id, login, name, role, status FROM admins WHERE token = :token AND status = 'active' LIMIT 1"
-    );
+    $stmt = $pdo->prepare("SELECT id, login, name, role, status FROM admins WHERE token = :token AND status = 'active' LIMIT 1");
     $stmt->execute([':token' => $token]);
     $admin = $stmt->fetch();
-
-    if (!$admin) {
-        json_response(['success' => false, 'message' => 'Администратор не найден или токен устарел'], 401);
-    }
-
+    if (!$admin) json_response(['success' => false, 'message' => 'Администратор не найден или токен устарел'], 401);
     return $admin;
 }
 
@@ -219,7 +186,6 @@ function app_platform_column(string $platform): ?string
         'telegram_agents' => 'telegram_agents_status',
         'instagram' => 'instagram_status',
     ];
-
     return $map[$platform] ?? null;
 }
 
@@ -236,12 +202,9 @@ function app_default_subscriptions(): array
 
 function app_get_subscriptions(PDO $pdo, int $participantId): array
 {
-    if (!app_table_exists($pdo, 'subscriptions')) {
-        return app_default_subscriptions();
-    }
+    if (!app_table_exists($pdo, 'subscriptions')) return app_default_subscriptions();
 
     app_ensure_core_schema($pdo);
-
     $columns = ['vk_status', 'max_status', 'telegram_status', 'instagram_status'];
     if (app_column_exists($pdo, 'subscriptions', 'telegram_agents_status')) {
         $columns[] = 'telegram_agents_status';
@@ -271,7 +234,6 @@ function app_get_subscriptions(PDO $pdo, int $participantId): array
         $sql = 'INSERT INTO subscriptions (`' . implode('`, `', $insertColumns) . '`) VALUES (' . implode(', ', $placeholders) . ')';
         $insert = $pdo->prepare($sql);
         $insert->execute($params);
-
         return app_default_subscriptions();
     }
 
@@ -285,15 +247,19 @@ function app_ticket_reason(PDO $pdo, string $preferred): string
 
 function app_next_ticket_number(PDO $pdo): string
 {
-    $next = app_count($pdo, 'SELECT COUNT(*) + 1 FROM tickets');
-    return 'SH-' . str_pad((string)$next, 6, '0', STR_PAD_LEFT);
+    for ($attempt = 0; $attempt < 80; $attempt++) {
+        $number = 'SH-' . random_int(100000, 999999);
+        $stmt = $pdo->prepare('SELECT id FROM tickets WHERE ticket_number = :ticket_number LIMIT 1');
+        $stmt->execute([':ticket_number' => $number]);
+        if (!$stmt->fetch()) return $number;
+    }
+
+    return 'SH-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
 }
 
 function app_create_ticket(PDO $pdo, int $participantId, string $preferredReason, ?int $sourceId, string $comment, int $quantity = 1): void
 {
-    if (!app_table_exists($pdo, 'tickets')) {
-        return;
-    }
+    if (!app_table_exists($pdo, 'tickets')) return;
 
     $reason = app_ticket_reason($pdo, $preferredReason);
     $quantity = max(1, $quantity);
@@ -332,27 +298,19 @@ function app_create_ticket(PDO $pdo, int $participantId, string $preferredReason
 
 function app_has_ticket(PDO $pdo, int $participantId, string $preferredReason): bool
 {
-    if (!app_table_exists($pdo, 'tickets')) {
-        return false;
-    }
+    if (!app_table_exists($pdo, 'tickets')) return false;
 
     $reason = app_ticket_reason($pdo, $preferredReason);
     $stmt = $pdo->prepare('SELECT id FROM tickets WHERE participant_id = :participant_id AND reason = :reason LIMIT 1');
-    $stmt->execute([
-        ':participant_id' => $participantId,
-        ':reason' => $reason,
-    ]);
+    $stmt->execute([':participant_id' => $participantId, ':reason' => $reason]);
     return (bool)$stmt->fetch();
 }
 
 function app_sync_socials_ticket(PDO $pdo, int $participantId): void
 {
-    if (!app_table_exists($pdo, 'subscriptions')) {
-        return;
-    }
+    if (!app_table_exists($pdo, 'subscriptions')) return;
 
     $row = app_get_subscriptions($pdo, $participantId);
-
     $allConfirmed =
         ($row['vk_status'] ?? '') === 'confirmed' &&
         ($row['max_status'] ?? '') === 'confirmed' &&
@@ -367,9 +325,7 @@ function app_sync_socials_ticket(PDO $pdo, int $participantId): void
 
 function app_sync_publications_ticket(PDO $pdo, int $participantId): void
 {
-    if (!app_table_exists($pdo, 'publications')) {
-        return;
-    }
+    if (!app_table_exists($pdo, 'publications')) return;
 
     $confirmedDays = app_count(
         $pdo,
