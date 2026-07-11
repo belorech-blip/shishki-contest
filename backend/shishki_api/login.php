@@ -20,12 +20,21 @@ try {
     $participant = $stmt->fetch();
 
     if (!$participant) json_response(['success' => false, 'message' => 'Участник не найден'], 401);
-    if ($participant['status'] !== 'active') json_response(['success' => false, 'message' => 'Доступ к кабинету закрыт'], 403);
-    if (!password_verify($password, $participant['password_hash'])) json_response(['success' => false, 'message' => 'Неверный пароль'], 401);
+    if (($participant['status'] ?? '') !== 'active') json_response(['success' => false, 'message' => 'Доступ к кабинету закрыт'], 403);
+    if (!password_verify($password, (string)$participant['password_hash'])) json_response(['success' => false, 'message' => 'Неверный пароль'], 401);
 
     $token = app_token();
-    $update = $pdo->prepare("UPDATE participants SET token = :token, last_login_at = NOW() WHERE id = :id LIMIT 1");
-    $update->execute([':token' => $token, ':id' => (int)$participant['id']]);
+
+    if (app_column_exists($pdo, 'participants', 'last_login_at')) {
+        $update = $pdo->prepare("UPDATE participants SET token = :token, last_login_at = NOW() WHERE id = :id LIMIT 1");
+    } else {
+        $update = $pdo->prepare("UPDATE participants SET token = :token WHERE id = :id LIMIT 1");
+    }
+
+    $update->execute([
+        ':token' => $token,
+        ':id' => (int)$participant['id']
+    ]);
 
     json_response([
         'success' => true,
@@ -39,5 +48,9 @@ try {
     ]);
 
 } catch (Throwable $e) {
-    json_response(['success' => false, 'message' => 'Ошибка входа', 'error' => $e->getMessage()], 500);
+    json_response([
+        'success' => false,
+        'message' => 'Ошибка входа',
+        'error' => $e->getMessage()
+    ], 500);
 }
