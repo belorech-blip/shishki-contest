@@ -106,9 +106,11 @@ try {
         $dealsHistory = app_fetch_all($pdo, "{$dealBase} WHERE d.status IN ('confirmed','rejected') ORDER BY COALESCE(d.verified_at, d.created_at) DESC, d.id DESC LIMIT 300");
     }
 
-    $tickets = app_table_exists($pdo, 'tickets')
-        ? app_fetch_all($pdo, "SELECT t.id, t.ticket_number, t.reason, t.admin_comment, t.created_at, p.name AS participant_name FROM tickets t INNER JOIN participants p ON p.id = t.participant_id ORDER BY t.created_at DESC, t.id DESC LIMIT 300")
-        : [];
+    $tickets = [];
+    if (app_table_exists($pdo, 'tickets')) {
+        $ticketsSelect = "t.id, t.ticket_number, t.reason, t.admin_comment, t.created_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency";
+        $tickets = app_fetch_all($pdo, "SELECT {$ticketsSelect} FROM tickets t INNER JOIN participants p ON p.id = t.participant_id ORDER BY t.created_at DESC, t.id DESC LIMIT 500");
+    }
 
     json_response([
         'success' => true,
