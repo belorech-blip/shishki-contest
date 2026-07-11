@@ -210,6 +210,74 @@ function app_count(PDO $pdo, string $sql, array $params = []): int
     return (int)$stmt->fetchColumn();
 }
 
+function app_platform_column(string $platform): ?string
+{
+    $map = [
+        'vk' => 'vk_status',
+        'max' => 'max_status',
+        'telegram' => 'telegram_status',
+        'telegram_agents' => 'telegram_agents_status',
+        'instagram' => 'instagram_status',
+    ];
+
+    return $map[$platform] ?? null;
+}
+
+function app_default_subscriptions(): array
+{
+    return [
+        'vk_status' => 'not_requested',
+        'max_status' => 'not_requested',
+        'telegram_status' => 'not_requested',
+        'telegram_agents_status' => 'not_requested',
+        'instagram_status' => 'not_requested',
+    ];
+}
+
+function app_get_subscriptions(PDO $pdo, int $participantId): array
+{
+    if (!app_table_exists($pdo, 'subscriptions')) {
+        return app_default_subscriptions();
+    }
+
+    app_ensure_core_schema($pdo);
+
+    $columns = ['vk_status', 'max_status', 'telegram_status', 'instagram_status'];
+    if (app_column_exists($pdo, 'subscriptions', 'telegram_agents_status')) {
+        $columns[] = 'telegram_agents_status';
+    }
+
+    $selectParts = $columns;
+    if (!in_array('telegram_agents_status', $columns, true)) {
+        $selectParts[] = "'not_requested' AS telegram_agents_status";
+    }
+
+    $stmt = $pdo->prepare('SELECT ' . implode(', ', $selectParts) . ' FROM subscriptions WHERE participant_id = :participant_id LIMIT 1');
+    $stmt->execute([':participant_id' => $participantId]);
+    $row = $stmt->fetch();
+
+    if (!$row) {
+        $insertColumns = ['participant_id'];
+        $placeholders = [':participant_id'];
+        $params = [':participant_id' => $participantId];
+
+        foreach ($columns as $column) {
+            if (app_column_exists($pdo, 'subscriptions', $column)) {
+                $insertColumns[] = $column;
+                $placeholders[] = "'not_requested'";
+            }
+        }
+
+        $sql = 'INSERT INTO subscriptions (`' . implode('`, `', $insertColumns) . '`) VALUES (' . implode(', ', $placeholders) . ')';
+        $insert = $pdo->prepare($sql);
+        $insert->execute($params);
+
+        return app_default_subscriptions();
+    }
+
+    return array_merge(app_default_subscriptions(), $row);
+}
+
 function app_ticket_reason(PDO $pdo, string $preferred): string
 {
     return app_enum_has($pdo, 'tickets', 'reason', $preferred) ? $preferred : 'manual';
@@ -283,13 +351,7 @@ function app_sync_socials_ticket(PDO $pdo, int $participantId): void
         return;
     }
 
-    $stmt = $pdo->prepare('SELECT vk_status, max_status, telegram_status, telegram_agents_status, instagram_status FROM subscriptions WHERE participant_id = :participant_id LIMIT 1');
-    $stmt->execute([':participant_id' => $participantId]);
-    $row = $stmt->fetch();
-
-    if (!$row) {
-        return;
-    }
+    $row = app_get_subscriptions($pdo, $participantId);
 
     $allConfirmed =
         ($row['vk_status'] ?? '') === 'confirmed' &&
