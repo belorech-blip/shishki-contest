@@ -156,7 +156,7 @@ function app_ensure_core_schema(PDO $pdo): void
         $pdo->exec("ALTER TABLE `tickets` MODIFY `reason` enum('deal','publications_30','socials_5','manual') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'manual'");
     }
 
-    if (app_table_exists($pdo, 'prizes') && !app_enum_has($pdo, 'prizes', 'ozon_20000')) {
+    if (app_table_exists($pdo, 'prizes') && !app_enum_has($pdo, 'prizes', 'prize_type', 'ozon_20000')) {
         $pdo->exec("ALTER TABLE `prizes` MODIFY `prize_type` enum('fuel_20','fuel_30','ozon_10000','ozon_20000','ozon_30000','plot','manual') COLLATE utf8mb4_unicode_ci NOT NULL");
     }
 }
