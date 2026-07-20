@@ -16,12 +16,6 @@ function app_table_count_safe(PDO $pdo, string $table): int
     return app_count($pdo, "SELECT COUNT(*) FROM `{$table}`");
 }
 
-function app_table_count_where_safe(PDO $pdo, string $table, string $where): int
-{
-    if (!app_table_exists($pdo, $table)) return 0;
-    return app_count($pdo, "SELECT COUNT(*) FROM `{$table}` WHERE {$where}");
-}
-
 function app_subscriptions_select(PDO $pdo): string
 {
     $telegramAgentsSelect = app_column_exists($pdo, 'subscriptions', 'telegram_agents_status')
@@ -93,7 +87,7 @@ try {
     $publicationsPending = [];
     $publicationsHistory = [];
     if (app_table_exists($pdo, 'publications')) {
-        $publicationBase = "SELECT pub.id, pub.publish_date, pub.platform, pub.url, pub.comment, pub.status, pub.admin_comment, pub.created_at, pub.verified_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency FROM publications pub INNER JOIN participants p ON p.id = pub.participant_id";
+        $publicationBase = "SELECT pub.id, pub.participant_id, pub.publish_date, pub.platform, pub.url, pub.comment, pub.status, pub.admin_comment, pub.created_at, pub.verified_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency FROM publications pub INNER JOIN participants p ON p.id = pub.participant_id";
         $publicationsPending = app_fetch_all($pdo, "{$publicationBase} WHERE pub.status = 'pending' ORDER BY pub.created_at DESC, pub.id DESC LIMIT 300");
         $publicationsHistory = app_fetch_all($pdo, "{$publicationBase} WHERE pub.status IN ('confirmed','rejected') ORDER BY COALESCE(pub.verified_at, pub.created_at) DESC, pub.id DESC LIMIT 300");
     }
@@ -101,14 +95,14 @@ try {
     $dealsPending = [];
     $dealsHistory = [];
     if (app_table_exists($pdo, 'deals')) {
-        $dealBase = "SELECT d.id, d.client_name, d.client_phone, d.plot_number, d.deal_date, d.status, d.comment, d.admin_comment, d.created_at, d.verified_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency FROM deals d INNER JOIN participants p ON p.id = d.participant_id";
+        $dealBase = "SELECT d.id, d.participant_id, d.client_name, d.client_phone, d.plot_number, d.deal_date, d.status, d.comment, d.admin_comment, d.created_at, d.verified_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency FROM deals d INNER JOIN participants p ON p.id = d.participant_id";
         $dealsPending = app_fetch_all($pdo, "{$dealBase} WHERE d.status = 'pending' ORDER BY d.created_at DESC, d.id DESC LIMIT 300");
         $dealsHistory = app_fetch_all($pdo, "{$dealBase} WHERE d.status IN ('confirmed','rejected') ORDER BY COALESCE(d.verified_at, d.created_at) DESC, d.id DESC LIMIT 300");
     }
 
     $tickets = [];
     if (app_table_exists($pdo, 'tickets')) {
-        $ticketsSelect = "t.id, t.ticket_number, t.reason, t.admin_comment, t.created_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency";
+        $ticketsSelect = "t.id, t.participant_id, t.ticket_number, t.reason, t.admin_comment, t.created_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency";
         $tickets = app_fetch_all($pdo, "SELECT {$ticketsSelect} FROM tickets t INNER JOIN participants p ON p.id = t.participant_id ORDER BY t.created_at DESC, t.id DESC LIMIT 500");
     }
 
