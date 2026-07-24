@@ -137,6 +137,10 @@ function app_ensure_core_schema(PDO $pdo): void
         $pdo->exec("ALTER TABLE `subscriptions` ADD `telegram_agents_status` enum('not_requested','pending','confirmed','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'not_requested' AFTER `telegram_status`");
     }
 
+    if (app_table_exists($pdo, 'subscriptions') && !app_column_exists($pdo, 'subscriptions', 'max_draw_status')) {
+        $pdo->exec("ALTER TABLE `subscriptions` ADD `max_draw_status` enum('not_requested','pending','confirmed','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'not_requested' AFTER `max_status`");
+    }
+
     if (app_table_exists($pdo, 'tickets') && !app_enum_has($pdo, 'tickets', 'reason', 'socials_5')) {
         $pdo->exec("ALTER TABLE `tickets` MODIFY `reason` enum('deal','publications_30','socials_5','manual') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'manual'");
     }
@@ -182,6 +186,7 @@ function app_platform_column(string $platform): ?string
     $map = [
         'vk' => 'vk_status',
         'max' => 'max_status',
+        'max_draw' => 'max_draw_status',
         'telegram' => 'telegram_status',
         'telegram_agents' => 'telegram_agents_status',
         'instagram' => 'instagram_status',
@@ -194,6 +199,7 @@ function app_default_subscriptions(): array
     return [
         'vk_status' => 'not_requested',
         'max_status' => 'not_requested',
+        'max_draw_status' => 'not_requested',
         'telegram_status' => 'not_requested',
         'telegram_agents_status' => 'not_requested',
         'instagram_status' => 'not_requested',
@@ -205,7 +211,7 @@ function app_get_subscriptions(PDO $pdo, int $participantId): array
     if (!app_table_exists($pdo, 'subscriptions')) return app_default_subscriptions();
 
     app_ensure_core_schema($pdo);
-    $columns = ['vk_status', 'max_status', 'telegram_status', 'instagram_status'];
+    $columns = ['vk_status', 'max_status', 'max_draw_status', 'telegram_status', 'instagram_status'];
     if (app_column_exists($pdo, 'subscriptions', 'telegram_agents_status')) {
         $columns[] = 'telegram_agents_status';
     }
@@ -314,12 +320,13 @@ function app_sync_socials_ticket(PDO $pdo, int $participantId): void
     $allConfirmed =
         ($row['vk_status'] ?? '') === 'confirmed' &&
         ($row['max_status'] ?? '') === 'confirmed' &&
+        ($row['max_draw_status'] ?? '') === 'confirmed' &&
         ($row['telegram_status'] ?? '') === 'confirmed' &&
         ($row['telegram_agents_status'] ?? '') === 'confirmed' &&
         ($row['instagram_status'] ?? '') === 'confirmed';
 
     if ($allConfirmed && !app_has_ticket($pdo, $participantId, 'socials_5')) {
-        app_create_ticket($pdo, $participantId, 'socials_5', null, 'За 5 подтвержденных соцсетей', 1);
+        app_create_ticket($pdo, $participantId, 'socials_5', null, 'За 6 подтвержденных каналов', 1);
     }
 }
 
