@@ -8,6 +8,7 @@ function shk_default_subscriptions(): array
     return [
         'vk_status' => 'not_requested',
         'max_status' => 'not_requested',
+        'max_draw_status' => 'not_requested',
         'telegram_status' => 'not_requested',
         'telegram_agents_status' => 'not_requested',
         'instagram_status' => 'not_requested',
@@ -24,7 +25,11 @@ function shk_get_subscriptions(PDO $pdo, int $participantId): array
         ? 'telegram_agents_status'
         : "'not_requested' AS telegram_agents_status";
 
-    $stmt = $pdo->prepare("SELECT vk_status, max_status, telegram_status, {$telegramAgentsSelect}, instagram_status FROM subscriptions WHERE participant_id = :participant_id LIMIT 1");
+    $maxDrawSelect = app_column_exists($pdo, 'subscriptions', 'max_draw_status')
+        ? 'max_draw_status'
+        : "'not_requested' AS max_draw_status";
+
+    $stmt = $pdo->prepare("SELECT vk_status, max_status, {$maxDrawSelect}, telegram_status, {$telegramAgentsSelect}, instagram_status FROM subscriptions WHERE participant_id = :participant_id LIMIT 1");
     $stmt->execute([':participant_id' => $participantId]);
     $row = $stmt->fetch();
 
@@ -120,6 +125,7 @@ try {
         'subscriptions' => [
             'vk' => $subscriptions['vk_status'] ?? 'not_requested',
             'max' => $subscriptions['max_status'] ?? 'not_requested',
+            'max_draw' => $subscriptions['max_draw_status'] ?? 'not_requested',
             'telegram' => $subscriptions['telegram_status'] ?? 'not_requested',
             'telegram_agents' => $subscriptions['telegram_agents_status'] ?? 'not_requested',
             'instagram' => $subscriptions['instagram_status'] ?? 'not_requested'
