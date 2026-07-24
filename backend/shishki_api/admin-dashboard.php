@@ -16,13 +16,23 @@ function app_table_count_safe(PDO $pdo, string $table): int
     return app_count($pdo, "SELECT COUNT(*) FROM `{$table}`");
 }
 
+function app_table_count_where_safe(PDO $pdo, string $table, string $where): int
+{
+    if (!app_table_exists($pdo, $table)) return 0;
+    return app_count($pdo, "SELECT COUNT(*) FROM `{$table}` WHERE {$where}");
+}
+
 function app_subscriptions_select(PDO $pdo): string
 {
     $telegramAgentsSelect = app_column_exists($pdo, 'subscriptions', 'telegram_agents_status')
         ? 's.telegram_agents_status'
         : "'not_requested' AS telegram_agents_status";
 
-    return "p.id AS participant_id, p.name AS participant_name, p.phone, p.agency, s.vk_status, s.max_status, s.telegram_status, {$telegramAgentsSelect}, s.instagram_status, s.created_at, s.updated_at";
+    $maxDrawSelect = app_column_exists($pdo, 'subscriptions', 'max_draw_status')
+        ? 's.max_draw_status'
+        : "'not_requested' AS max_draw_status";
+
+    return "p.id AS participant_id, p.name AS participant_name, p.phone, p.agency, s.vk_status, s.max_status, {$maxDrawSelect}, s.telegram_status, {$telegramAgentsSelect}, s.instagram_status, s.created_at, s.updated_at";
 }
 
 function app_flatten_subscriptions(array $rows, array $statuses): array
@@ -30,6 +40,7 @@ function app_flatten_subscriptions(array $rows, array $statuses): array
     $platformLabels = [
         'vk' => 'ВКонтакте',
         'max' => 'MAX',
+        'max_draw' => 'MAX — канал розыгрыша',
         'telegram' => 'Telegram КП',
         'telegram_agents' => 'Telegram для агентов',
         'instagram' => 'Instagram',
