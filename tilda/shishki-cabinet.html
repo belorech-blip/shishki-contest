@@ -10,7 +10,7 @@
     .shk-hero{padding:34px;border-radius:34px;background:linear-gradient(90deg,rgba(6,41,28,.96),rgba(6,41,28,.72)),url('https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1600&auto=format&fit=crop') center/cover;color:#fff;box-shadow:0 30px 90px rgba(3,31,21,.16)}.shk-hero h1{margin:0;font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.07em;font-weight:900}.shk-hero p{margin:14px 0 0;max-width:760px;color:rgba(255,255,255,.74);font-size:17px;line-height:1.5;font-weight:600}
     .shk-grid{display:grid;gap:16px}.shk-stats{grid-template-columns:repeat(4,1fr);margin:18px 0}.shk-card{padding:22px;border-radius:26px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.82);box-shadow:0 18px 54px rgba(6,41,28,.07)}.shk-stat small,.shk-card small{display:block;color:#6c7a71;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.shk-stat strong{display:block;margin-top:10px;font-size:32px;line-height:1;font-weight:900;letter-spacing:-.05em}.shk-stat span{display:block;margin-top:7px;color:#6c7a71;font-size:13px;font-weight:700}
     .shk-section{margin-top:16px}.shk-section h2{margin:0 0 10px;font-size:32px;line-height:1;letter-spacing:-.055em;font-weight:900}.shk-section p{margin:0 0 16px;color:#6c7a71;font-size:15px;line-height:1.45;font-weight:600}.shk-note{margin-top:10px;color:#6c7a71;font-size:13px;line-height:1.45;font-weight:750}
-    .shk-socials{grid-template-columns:repeat(5,1fr)}.shk-social{display:flex;flex-direction:column;gap:12px;min-height:210px}.shk-social h3{margin:0;font-size:20px;line-height:1.05;letter-spacing:-.04em}
+    .shk-socials{grid-template-columns:repeat(3,1fr)}.shk-social{display:flex;flex-direction:column;gap:12px;min-height:210px}.shk-social h3{margin:0;font-size:20px;line-height:1.05;letter-spacing:-.04em}
     .shk-status{width:max-content;min-height:30px;padding:0 11px;border-radius:999px;display:inline-flex;align-items:center;font-size:12px;font-weight:900}.ok{color:#0f7a4b;background:rgba(15,122,75,.1)}.wait{color:#a76b11;background:rgba(167,107,17,.1)}.bad{color:#b34a36;background:rgba(179,74,54,.1)}.neutral{color:#6c7a71;background:rgba(6,41,28,.07)}
     .shk-alert{padding:14px 16px;border-radius:18px;background:#fff;color:#b34a36;font-weight:800}.shk-alert.okmsg{color:#0f7a4b;background:rgba(15,122,75,.09)}.shk-countdown{font-size:13px;color:#6c7a71;font-weight:700}.shk-loading{min-height:70vh;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}
     .shk-prizes{grid-template-columns:repeat(6,1fr)}.shk-tickets{grid-template-columns:repeat(4,1fr)}.shk-ticket-number{font-size:26px!important;letter-spacing:-.05em;color:#06291c}.shk-empty{padding:18px;border-radius:20px;background:rgba(6,41,28,.04);color:#6c7a71;font-weight:750}.shk-date{margin-top:8px;color:#6c7a71;font-size:12px;font-weight:800}
@@ -79,8 +79,8 @@
         <div id="dealAlert" class="shk-alert shk-hidden"></div>
         <form id="dealForm" class="shk-form">
           <div class="shk-form-grid"><div class="shk-field"><label>ФИО клиента</label><input name="client_name" required placeholder="Иванов Иван"></div><div class="shk-field"><label>Телефон клиента</label><input name="client_phone" required placeholder="+7..."></div></div>
-          <div class="shk-form-grid"><div class="shk-field"><label>Номер участка</label><input name="plot_number" placeholder="Например: 27"></div><div class="shk-field"><label>Дата сделки</label><input name="deal_date" type="date"></div></div>
-          <div class="shk-field"><label>Комментарий</label><textarea name="comment" placeholder="Дополнительная информация по сделке"></textarea></div>
+          <div class="shk-form-grid"><div class="shk-field"><label>Номер участка</label><input name="plot_number" placeholder="Например: 27"></div><div class="shk-field"><label>Дата сделки</label><input name="deal_date" type="date" required></div></div>
+          <div class="shk-field"><label>Комментарий</label><textarea name="comment" placeholder="Дополнительная информация"></textarea></div>
           <button class="shk-btn shk-btn-dark" type="submit" id="dealBtn">Отправить сделку на проверку</button>
         </form>
       </section>
@@ -88,7 +88,7 @@
       <section class="shk-card shk-section"><h2>Мои сделки</h2><div id="dealsList" class="shk-list"></div></section>
 
       <section class="shk-card shk-section">
-        <h2>Подписки</h2><p>Подпишитесь на все 5 площадок и нажмите «Проверить». После подтверждения администратором всех 5 подписок начисляется 1 билет.</p>
+        <h2>Подписки</h2><p>Подпишитесь на все 6 каналов и нажмите «Проверить». После подтверждения администратором всех 6 подписок начисляется 1 билет.</p>
         <div class="shk-grid shk-socials" id="socialsList"></div>
       </section>
 
@@ -110,9 +110,9 @@
     (function(){
       const API={me:'https://wow.shishki72.ru/shishki_api/me.php',subscriptionCheck:'https://wow.shishki72.ru/shishki_api/subscription-check.php',addPublication:'https://wow.shishki72.ru/shishki_api/add-publication.php',addDeal:'https://wow.shishki72.ru/shishki_api/add-deal.php'};
       const LOGIN='https://шишки.рус/shishki-login';
-      const SOCIALS=[['max','MAX','https://max.ru/id8603207560_biz'],['vk','ВКонтакте','https://vk.ru/poselok_shishki'],['telegram','Telegram КП','https://t.me/poselok_shishki'],['telegram_agents','Telegram агенты','https://t.me/shishki_agents'],['instagram','Instagram','https://www.instagram.com/shishki72.ru']];
+      const SOCIALS=[['max','MAX','https://max.ru/id8603207560_biz'],['max_draw','MAX — канал розыгрыша','https://max.ru/join/T7HHhfcWw8OtZmJLyM_oxK2fNq4NBtHmb0mUaNBj570'],['vk','ВКонтакте','https://vk.ru/poselok_shishki'],['telegram','Telegram КП','https://t.me/poselok_shishki'],['telegram_agents','Telegram агенты','https://t.me/shishki_agents'],['instagram','Instagram','https://www.instagram.com/shishki72.ru']];
       const $=id=>document.getElementById(id);const token=()=>localStorage.getItem('shishki_token')||sessionStorage.getItem('shishki_token');const auth=()=>({'Content-Type':'application/json','Authorization':'Bearer '+token()});const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-      function reasonLabel(reason){if(reason==='socials_5')return '5 соцсетей';if(reason==='publications_30')return '30 дней публикаций';if(reason==='deal')return 'Сделка';if(reason==='manual')return 'Ручное начисление';return reason||'Билет';}
+      function reasonLabel(reason){if(reason==='socials_5')return '6 каналов';if(reason==='publications_30')return '30 дней публикаций';if(reason==='deal')return 'Сделка';if(reason==='manual')return 'Ручное начисление';return reason||'Билет';}
       function platformLabel(platform){if(platform==='vk')return 'ВКонтакте';if(platform==='max')return 'MAX';if(platform==='telegram')return 'Telegram';if(platform==='instagram')return 'Instagram';return platform||'—';}
       function formatDate(value){if(!value)return '—';const d=new Date(String(value).replace(' ','T'));if(Number.isNaN(d.getTime()))return esc(value);return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
       function statusText(status){const s=String(status||'');if(s==='pending')return 'Заявка отправлена и ждёт проверки администратора.';if(s==='confirmed')return 'Подтверждено. Действие засчитано в конкурсе.';if(s==='rejected')return 'Отклонено. Проверьте комментарий администратора или отправьте новое действие.';return 'Пока не отправлено на проверку.';}
