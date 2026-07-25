@@ -19,7 +19,23 @@ try {
 
     $pdo->beginTransaction();
     $tokenHash = hash('sha256', $rawToken);
-    $stmt = $pdo->prepare("SELECT ait.id, ait.admin_id, ait.participant_id, ait.expires_at, ait.used_at, p.name, p.token AS participant_token, p.status
+
+    /*
+     * Срок действия проверяем средствами MySQL, а не через PHP strtotime().
+     * Иначе при разных часовых поясах PHP и MySQL свежая ссылка могла сразу
+     * определяться как устаревшая.
+     */
+    $stmt = $pdo->prepare("SELECT
+            ait.id,
+            ait.admin_id,
+            ait.participant_id,
+            ait.expires_at,
+            ait.used_at,
+            (ait.expires_at < NOW()) AS is_expired,
+            (ait.used_at IS NOT NULL AND ait.used_at >= DATE_SUB(NOW(), INTERVAL 60 SECOND)) AS replay_allowed,
+            p.name,
+            p.token AS participant_token,
+            p.status
         FROM admin_impersonation_tokens ait
         INNER JOIN participants p ON p.id = ait.participant_id
         WHERE ait.token_hash = :token_hash
@@ -28,7 +44,12 @@ try {
     $stmt->execute([':token_hash' => $tokenHash]);
     $row = $stmt->fetch();
 
-    if (!$row || strtotime((string)$row['expires_at']) < time()) {
+    if (!$row) {
+        $pdo->rollBack();
+        json_response(['success' => false, 'message' => 'Ссылка входа недействительна'], 404);
+    }
+
+    if ((int)($row['is_expired'] ?? 1) === 1) {
         $pdo->rollBack();
         json_response(['success' => false, 'message' => 'Ссылка входа устарела'], 410);
     }
@@ -39,13 +60,11 @@ try {
     }
 
     /*
-     * Tilda иногда выполняет код блока дважды при первом открытии страницы.
-     * Первый запрос уже успевает поглотить одноразовый токен, а второй приходит
-     * почти одновременно. Разрешаем только технический повтор в течение 20 секунд.
+     * Tilda может дважды инициализировать HTML-блок при первом открытии.
+     * Повтор того же токена допускается только в течение одной минуты.
      */
     if ($row['used_at'] !== null) {
-        $usedAt = strtotime((string)$row['used_at']);
-        if ($usedAt === false || (time() - $usedAt) > 20) {
+        if ((int)($row['replay_allowed'] ?? 0) !== 1) {
             $pdo->rollBack();
             json_response(['success' => false, 'message' => 'Ссылка уже использована или устарела'], 410);
         }
@@ -75,5 +94,9 @@ try {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    json_response(['success' => false, 'message' => 'Не удалось выполнить вход в кабинет', 'error' => $e->getMessage()], 500);
+    json_response([
+        'success' => false,
+        'message' => 'Не удалось выполнить вход в кабинет',
+        'error' => $e->getMessage(),
+    ], 500);
 }
