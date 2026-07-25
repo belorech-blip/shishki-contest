@@ -5,6 +5,7 @@ app_require_method('POST');
 
 try {
     $pdo = db();
+    app_ensure_core_schema($pdo);
     $data = get_json_input();
     $rawToken = app_clean($data['token'] ?? '');
 
@@ -27,14 +28,36 @@ try {
     $stmt->execute([':token_hash' => $tokenHash]);
     $row = $stmt->fetch();
 
-    if (!$row || $row['used_at'] !== null || strtotime((string)$row['expires_at']) < time()) {
+    if (!$row || strtotime((string)$row['expires_at']) < time()) {
         $pdo->rollBack();
-        json_response(['success' => false, 'message' => 'Ссылка уже использована или устарела'], 410);
+        json_response(['success' => false, 'message' => 'Ссылка входа устарела'], 410);
     }
 
     if (($row['status'] ?? '') !== 'active' || empty($row['participant_token'])) {
         $pdo->rollBack();
         json_response(['success' => false, 'message' => 'Кабинет участника недоступен'], 403);
+    }
+
+    /*
+     * Tilda иногда выполняет код блока дважды при первом открытии страницы.
+     * Первый запрос уже успевает поглотить одноразовый токен, а второй приходит
+     * почти одновременно. Разрешаем только технический повтор в течение 20 секунд.
+     */
+    if ($row['used_at'] !== null) {
+        $usedAt = strtotime((string)$row['used_at']);
+        if ($usedAt === false || (time() - $usedAt) > 20) {
+            $pdo->rollBack();
+            json_response(['success' => false, 'message' => 'Ссылка уже использована или устарела'], 410);
+        }
+
+        $pdo->commit();
+        json_response([
+            'success' => true,
+            'participant_token' => $row['participant_token'],
+            'participant_name' => $row['name'] ?? '',
+            'admin_id' => (int)$row['admin_id'],
+            'replayed' => true,
+        ]);
     }
 
     $update = $pdo->prepare("UPDATE admin_impersonation_tokens SET used_at = NOW() WHERE id = :id LIMIT 1");
@@ -46,6 +69,7 @@ try {
         'participant_token' => $row['participant_token'],
         'participant_name' => $row['name'] ?? '',
         'admin_id' => (int)$row['admin_id'],
+        'replayed' => false,
     ]);
 } catch (Throwable $e) {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
