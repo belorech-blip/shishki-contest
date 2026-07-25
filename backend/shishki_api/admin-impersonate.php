@@ -36,11 +36,16 @@ try {
         KEY `idx_expires_at` (`expires_at`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    $pdo->exec("DELETE FROM admin_impersonation_tokens WHERE expires_at < NOW() OR used_at IS NOT NULL");
+    /* Сохраняем недавно использованные токены на минуту для возможного двойного запуска блока Tilda. */
+    $pdo->exec("DELETE FROM admin_impersonation_tokens
+        WHERE expires_at < DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+           OR (used_at IS NOT NULL AND used_at < DATE_SUB(NOW(), INTERVAL 10 MINUTE))");
 
     $rawToken = bin2hex(random_bytes(32));
     $tokenHash = hash('sha256', $rawToken);
-    $insert = $pdo->prepare("INSERT INTO admin_impersonation_tokens (token_hash, admin_id, participant_id, expires_at) VALUES (:token_hash, :admin_id, :participant_id, DATE_ADD(NOW(), INTERVAL 5 MINUTE))");
+    $insert = $pdo->prepare("INSERT INTO admin_impersonation_tokens
+        (token_hash, admin_id, participant_id, expires_at)
+        VALUES (:token_hash, :admin_id, :participant_id, DATE_ADD(NOW(), INTERVAL 5 MINUTE))");
     $insert->execute([
         ':token_hash' => $tokenHash,
         ':admin_id' => (int)$admin['id'],
@@ -54,5 +59,9 @@ try {
         'expires_in' => 300,
     ]);
 } catch (Throwable $e) {
-    json_response(['success' => false, 'message' => 'Не удалось открыть кабинет участника', 'error' => $e->getMessage()], 500);
+    json_response([
+        'success' => false,
+        'message' => 'Не удалось открыть кабинет участника',
+        'error' => $e->getMessage(),
+    ], 500);
 }
