@@ -59,6 +59,14 @@ try {
 
     $subscriptions = shk_get_subscriptions($pdo, $participantId);
 
+    $clients = shk_fetch_rows(
+        $pdo,
+        'agent_clients',
+        $participantId,
+        'id, client_name, client_phone, comment, created_at, updated_at',
+        300
+    );
+
     $publications = shk_fetch_rows(
         $pdo,
         'publications',
@@ -93,6 +101,10 @@ try {
         ? app_count($pdo, "SELECT COUNT(*) FROM tickets WHERE participant_id = :participant_id", [':participant_id' => $participantId])
         : 0;
 
+    $clientsCount = app_table_exists($pdo, 'agent_clients')
+        ? app_count($pdo, "SELECT COUNT(*) FROM agent_clients WHERE participant_id = :participant_id", [':participant_id' => $participantId])
+        : 0;
+
     $publications30Status = $confirmedPublications >= 30 ? 'available' : 'pending';
 
     json_response([
@@ -109,6 +121,7 @@ try {
         ],
         'stats' => [
             'tickets_count' => $ticketsCount,
+            'clients_count' => $clientsCount,
             'publications_confirmed' => $confirmedPublications,
             'publications_total' => count($publications),
             'deals_confirmed' => $confirmedDeals,
@@ -130,6 +143,7 @@ try {
             'telegram_agents' => $subscriptions['telegram_agents_status'] ?? 'not_requested',
             'instagram' => $subscriptions['instagram_status'] ?? 'not_requested'
         ],
+        'clients' => $clients,
         'tickets' => $tickets,
         'publications' => $publications,
         'deals' => $deals
