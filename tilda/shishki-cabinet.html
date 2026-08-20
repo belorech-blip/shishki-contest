@@ -16,7 +16,7 @@
     @media(prefers-reduced-motion:reduce){.shk-materials:before{animation:none}.shk-materials,.shk-materials-arrow{transition:none}}
     .shk-hero{padding:34px;border-radius:34px;background:linear-gradient(90deg,rgba(6,41,28,.96),rgba(6,41,28,.72)),url('https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1600&auto=format&fit=crop') center/cover;color:#fff;box-shadow:0 30px 90px rgba(3,31,21,.16)}
     .shk-hero h1{margin:0;font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.07em;font-weight:900}.shk-hero p{margin:14px 0 0;max-width:760px;color:rgba(255,255,255,.74);font-size:17px;line-height:1.5;font-weight:600}
-    .shk-grid{display:grid;gap:16px}.shk-stats{grid-template-columns:repeat(4,1fr);margin:18px 0}.shk-card{padding:22px;border-radius:26px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.82);box-shadow:0 18px 54px rgba(6,41,28,.07)}
+    .shk-grid{display:grid;gap:16px}.shk-stats{grid-template-columns:repeat(5,1fr);margin:18px 0}.shk-card{padding:22px;border-radius:26px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.82);box-shadow:0 18px 54px rgba(6,41,28,.07)}
     .shk-stat small,.shk-card small{display:block;color:#6c7a71;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.shk-stat strong{display:block;margin-top:10px;font-size:32px;line-height:1;font-weight:900}.shk-stat span{display:block;margin-top:7px;color:#6c7a71;font-size:13px;font-weight:700}
     .shk-section{margin-top:16px}.shk-section h2{margin:0 0 10px;font-size:32px;line-height:1;font-weight:900}.shk-section p{margin:0 0 16px;color:#6c7a71;font-size:15px;line-height:1.45;font-weight:600}.shk-note{margin-top:10px;color:#6c7a71;font-size:13px;line-height:1.45;font-weight:750}
     .shk-socials{grid-template-columns:repeat(3,1fr)}.shk-social{display:flex;flex-direction:column;gap:12px;min-height:210px}.shk-social h3{margin:0;font-size:20px;line-height:1.05}
@@ -25,8 +25,9 @@
     .shk-prizes{grid-template-columns:repeat(6,1fr)}.shk-tickets{grid-template-columns:repeat(4,1fr)}.shk-ticket-number{font-size:26px!important;color:#06291c}.shk-empty{padding:18px;border-radius:20px;background:rgba(6,41,28,.04);color:#6c7a71;font-weight:750}.shk-date{margin-top:8px;color:#6c7a71;font-size:12px;font-weight:800}
     .shk-form{display:grid;gap:12px;margin-top:18px}.shk-form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.shk-field{display:grid;gap:8px}.shk-field label{font-size:13px;font-weight:900;color:#6c7a71}.shk-field input,.shk-field select,.shk-field textarea{width:100%;min-height:54px;border:1px solid rgba(6,41,28,.12);border-radius:18px;padding:0 16px;font:800 15px Inter,Arial;color:#06291c;background:#fff}.shk-field textarea{min-height:104px;padding:14px 16px;resize:vertical}
     .shk-list{display:grid;gap:10px;margin-top:14px}.shk-row{display:grid;grid-template-columns:1fr .72fr .72fr .9fr;gap:12px;align-items:center;padding:16px;border-radius:22px;background:#fff;border:1px solid rgba(6,41,28,.06)}.shk-row a{font-weight:900;color:#06291c}.shk-status-text{margin-top:7px;color:#6c7a71;font-size:13px;font-weight:750}.shk-comment{margin-top:7px;color:#8d2b1d;font-size:13px;font-weight:800}.shk-muted{color:#6c7a71;font-size:13px;font-weight:700}
-    @media(max-width:1100px){.shk-prizes{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:980px){.shk-stats,.shk-socials,.shk-tickets,.shk-form-grid{grid-template-columns:1fr 1fr}.shk-row{grid-template-columns:1fr}}
+    .shk-client-list{display:grid;gap:10px;margin-top:14px}.shk-client-row{display:grid;grid-template-columns:1.15fr .9fr 1.25fr auto;gap:14px;align-items:center;padding:16px;border-radius:20px;background:#fff;border:1px solid rgba(6,41,28,.06)}.shk-client-row strong{display:block;font-size:16px}.shk-client-phone{color:#06291c;font-weight:900;text-decoration:none}.shk-client-comment{color:#6c7a71;font-size:13px;line-height:1.4;font-weight:700}.shk-client-date{color:#6c7a71;font-size:12px;font-weight:800;white-space:nowrap}
+    @media(max-width:1100px){.shk-prizes{grid-template-columns:repeat(3,1fr)}.shk-stats{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:980px){.shk-stats,.shk-socials,.shk-tickets,.shk-form-grid{grid-template-columns:1fr 1fr}.shk-row,.shk-client-row{grid-template-columns:1fr}}
     @media(max-width:640px){.shk-cabinet{padding:14px 10px 50px}.shk-admin-mode{display:grid}.shk-top{border-radius:22px}.shk-user{display:none}.shk-stats,.shk-socials,.shk-prizes,.shk-tickets,.shk-form-grid{grid-template-columns:1fr}.shk-hero{padding:26px}.shk-logo{height:34px}.shk-materials{padding:18px 20px}.shk-materials strong{font-size:18px}.shk-materials-arrow{display:none}}
   </style>
 
@@ -48,13 +49,35 @@
         <span class="shk-materials-arrow">→</span>
       </a>
 
-      <section class="shk-hero"><h1>Личный кабинет участника</h1><p id="userText">Здесь отображаются ваши подписки, публикации, сделки и билеты.</p></section>
+      <section class="shk-hero"><h1>Личный кабинет участника</h1><p id="userText">Здесь отображаются ваши клиенты, подписки, публикации, сделки и билеты.</p></section>
 
       <section class="shk-grid shk-stats">
         <div class="shk-card shk-stat"><small>Билеты</small><strong id="ticketsCount">0</strong><span>участвуют в розыгрыше</span></div>
+        <div class="shk-card shk-stat"><small>Клиенты</small><strong id="clientsCount">0</strong><span>закреплено за вами</span></div>
         <div class="shk-card shk-stat"><small>Публикации</small><strong id="pubsCount">0</strong><span>подтверждённых дней</span></div>
         <div class="shk-card shk-stat"><small>Сделки</small><strong id="dealsCount">0</strong><span>подтверждённых продаж</span></div>
         <div class="shk-card shk-stat"><small>Розыгрыш</small><strong style="font-size:26px">30.09.2026</strong><span class="shk-countdown" id="countdown">—</span></div>
+      </section>
+
+      <section class="shk-card shk-section">
+        <h2>Закрепить клиента</h2>
+        <p>Добавьте клиента, с которым вы работаете. После отправки он сразу закрепится за вами и будет виден администратору.</p>
+        <div class="shk-note">Один номер телефона может быть закреплён только за одним агентом. Если клиент уже есть в системе, повторное закрепление не пройдёт.</div>
+        <div id="clientAlert" class="shk-alert shk-hidden" style="margin-top:14px"></div>
+        <form id="clientForm" class="shk-form">
+          <div class="shk-form-grid">
+            <div class="shk-field"><label>ФИО клиента</label><input name="client_name" required maxlength="255" placeholder="Иванов Иван Иванович"></div>
+            <div class="shk-field"><label>Телефон клиента</label><input name="client_phone" type="tel" autocomplete="tel" required placeholder="+7 999 000-00-00"></div>
+          </div>
+          <div class="shk-field"><label>Комментарий</label><textarea name="comment" maxlength="2000" placeholder="Например: интересуется участком, планирует покупку в сентябре"></textarea></div>
+          <button class="shk-btn shk-btn-dark" type="submit" id="clientBtn">Закрепить клиента</button>
+        </form>
+      </section>
+
+      <section class="shk-card shk-section">
+        <h2>Мои клиенты</h2>
+        <p>Клиенты, которые закреплены за вами в системе.</p>
+        <div id="clientsList" class="shk-client-list"></div>
       </section>
 
       <section class="shk-card shk-section"><h2>Мои билеты</h2><p>Каждый билет имеет уникальный случайный номер.</p><div class="shk-grid shk-tickets" id="ticketsList"></div></section>
@@ -108,7 +131,7 @@
       if(window.__shishkiCabinetBooted){return;}
       window.__shishkiCabinetBooted=true;
 
-      const API={me:'https://wow.shishki72.ru/shishki_api/me.php',subscriptionCheck:'https://wow.shishki72.ru/shishki_api/subscription-check.php',addPublication:'https://wow.shishki72.ru/shishki_api/add-publication.php',addDeal:'https://wow.shishki72.ru/shishki_api/add-deal.php',consumeImpersonation:'https://wow.shishki72.ru/shishki_api/consume-impersonation.php'};
+      const API={me:'https://wow.shishki72.ru/shishki_api/me.php',subscriptionCheck:'https://wow.shishki72.ru/shishki_api/subscription-check.php',addPublication:'https://wow.shishki72.ru/shishki_api/add-publication.php',addDeal:'https://wow.shishki72.ru/shishki_api/add-deal.php',addClient:'https://wow.shishki72.ru/shishki_api/add-client.php',consumeImpersonation:'https://wow.shishki72.ru/shishki_api/consume-impersonation.php'};
       const LOGIN='https://шишки.рус/shishki-login';
       const SOCIALS=[['max','MAX','https://max.ru/id8603207560_biz'],['max_draw','MAX — канал розыгрыша','https://max.ru/join/yRafG0bvHLheMI96fukFSndgEeB-I6QlF8owsk8N7yk'],['vk','ВКонтакте','https://vk.ru/poselok_shishki'],['telegram','Telegram КП','https://t.me/poselok_shishki'],['telegram_agents','Telegram агенты','https://t.me/shishki_agents'],['instagram','Instagram','https://www.instagram.com/shishki72.ru']];
       const $=id=>document.getElementById(id);
@@ -125,6 +148,7 @@
       function showFormAlert(id,type,msg){const b=$(id);b.textContent=msg;b.classList.remove('shk-hidden','okmsg');if(type==='ok')b.classList.add('okmsg');}
       function startCountdown(){const end=new Date('2026-09-29T23:59:00+05:00').getTime();function tick(){let diff=Math.max(0,end-Date.now());$('countdown').textContent='До завершения: '+Math.floor(diff/86400000)+' д. '+Math.floor(diff%86400000/3600000)+' ч.';}tick();if(!window.__shishkiCountdown){window.__shishkiCountdown=setInterval(tick,60000);}}
       function renderTickets(a){$('ticketsList').innerHTML=a.length?a.map(x=>'<div class="shk-card"><small>Билет</small><strong class="shk-ticket-number">'+esc(x.ticket_number||'—')+'</strong><span class="shk-status neutral">'+esc(reasonLabel(x.reason))+'</span><div class="shk-date">'+formatDate(x.created_at)+'</div></div>').join(''):'<div class="shk-empty">Пока нет билетов.</div>';}
+      function renderClients(a){$('clientsList').innerHTML=a.length?a.map(x=>'<div class="shk-client-row"><div><strong>'+esc(x.client_name||'Клиент')+'</strong><div class="shk-date">закреплён за вами</div></div><div><a class="shk-client-phone" href="tel:'+esc(x.client_phone||'')+'">'+esc(x.client_phone||'—')+'</a></div><div class="shk-client-comment">'+esc(x.comment||'Без комментария')+'</div><div class="shk-client-date">'+formatDate(x.created_at)+'</div></div>').join(''):'<div class="shk-empty">У вас пока нет закреплённых клиентов.</div>';}
       function renderPublications(a){$('publicationsList').innerHTML=a.length?a.map(x=>'<div class="shk-row"><div><strong>'+esc(platformLabel(x.platform))+'</strong><div class="shk-date">'+esc(x.publish_date||'—')+'</div><div class="shk-status-text">'+esc(statusText(x.status))+'</div></div><div>'+statusHtml(x.status)+'</div><div><a href="'+esc(x.url)+'" target="_blank" rel="noopener">Открыть</a></div><div>'+formatDate(x.created_at)+'</div></div>').join(''):'<div class="shk-empty">Публикаций пока нет.</div>';}
       function renderDeals(a){$('dealsList').innerHTML=a.length?a.map(x=>'<div class="shk-row"><div><strong>'+esc(x.client_name||'Клиент')+'</strong><div class="shk-muted">'+esc(x.client_phone||'')+'</div></div><div>'+statusHtml(x.status)+'</div><div>Участок '+esc(x.plot_number||'—')+'</div><div>'+esc(x.deal_date||'—')+'</div></div>').join(''):'<div class="shk-empty">Сделок пока нет.</div>';}
 
@@ -133,10 +157,12 @@
         $('userName').textContent=p.name||'Риелтор';
         $('userText').textContent=(p.name||'Риелтор')+' · '+(p.agency||'Агентство не указано')+' · '+(p.phone||'');
         $('ticketsCount').textContent=s.tickets_count||0;
+        $('clientsCount').textContent=s.clients_count||0;
         $('pubsCount').textContent=s.publications_confirmed||0;
         $('dealsCount').textContent=s.deals_confirmed||0;
         $('fuel20').outerHTML=statusHtml(s.fuel20_status);
         $('fuel30').outerHTML=statusHtml(s.fuel30_status);
+        renderClients(data.clients||[]);
         renderTickets(data.tickets||[]);
         renderPublications(data.publications||[]);
         renderDeals(data.deals||[]);
@@ -185,9 +211,10 @@
       }
 
       async function check(platform,btn){btn.disabled=true;try{const r=await fetch(API.subscriptionCheck,{method:'POST',headers:auth(),body:JSON.stringify({platform})});const j=await r.json().catch(()=>({}));if(!r.ok||j.success===false)throw new Error(j.message||'Ошибка');await load();}catch(e){alert(e.message);}finally{btn.disabled=false;}}
-      async function sendForm(form,api,alertId,btnId,okText){const btn=$(btnId);btn.disabled=true;try{const r=await fetch(api,{method:'POST',headers:auth(),body:JSON.stringify(Object.fromEntries(new FormData(form).entries()))});const j=await r.json().catch(()=>({}));if(!r.ok||j.success===false)throw new Error(j.message||'Ошибка');form.reset();setTodayDefaults();showFormAlert(alertId,'ok',okText);await load();}catch(e){showFormAlert(alertId,'err',e.message);}finally{btn.disabled=false;}}
+      async function sendForm(form,api,alertId,btnId,okText){const btn=$(btnId);btn.disabled=true;const old=btn.textContent;btn.textContent='Отправляем...';try{const r=await fetch(api,{method:'POST',headers:auth(),body:JSON.stringify(Object.fromEntries(new FormData(form).entries()))});const j=await r.json().catch(()=>({}));if(!r.ok||j.success===false)throw new Error(j.message||'Ошибка');form.reset();setTodayDefaults();showFormAlert(alertId,'ok',j.message||okText);await load();}catch(e){showFormAlert(alertId,'err',e.message||'Ошибка');}finally{btn.disabled=false;btn.textContent=old;}}
       function setTodayDefaults(){const t=new Date().toISOString().slice(0,10);const pub=document.querySelector('[name="publish_date"]');const deal=document.querySelector('[name="deal_date"]');if(pub&&!pub.value)pub.value=t;if(deal&&!deal.value)deal.value=t;}
 
+      $('clientForm').addEventListener('submit',e=>{e.preventDefault();sendForm(e.target,API.addClient,'clientAlert','clientBtn','Клиент закреплён за вами.');});
       $('publicationForm').addEventListener('submit',e=>{e.preventDefault();sendForm(e.target,API.addPublication,'publicationAlert','publicationBtn','Публикация отправлена.');});
       $('dealForm').addEventListener('submit',e=>{e.preventDefault();sendForm(e.target,API.addDeal,'dealAlert','dealBtn','Сделка отправлена.');});
       $('logoutBtn').addEventListener('click',()=>{sessionStorage.removeItem('shishki_impersonation_token');sessionStorage.removeItem('shishki_impersonation_name');localStorage.removeItem('shishki_token');sessionStorage.removeItem('shishki_token');location.href=LOGIN;});
