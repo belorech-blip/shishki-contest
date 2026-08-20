@@ -83,7 +83,17 @@ try {
 
     $participants = [];
     if (app_table_exists($pdo, 'participants')) {
-        $participants = app_fetch_all($pdo, "SELECT p.id, p.name, p.phone, p.agency, p.status, p.created_at, COALESCE(pub.confirmed_count, 0) AS publications_confirmed, COALESCE(deal.confirmed_count, 0) AS deals_confirmed, COALESCE(ticket.ticket_count, 0) AS tickets_count FROM participants p LEFT JOIN (SELECT participant_id, COUNT(DISTINCT publish_date) AS confirmed_count FROM publications WHERE status = 'confirmed' GROUP BY participant_id) pub ON pub.participant_id = p.id LEFT JOIN (SELECT participant_id, COUNT(*) AS confirmed_count FROM deals WHERE status = 'confirmed' GROUP BY participant_id) deal ON deal.participant_id = p.id LEFT JOIN (SELECT participant_id, COUNT(*) AS ticket_count FROM tickets GROUP BY participant_id) ticket ON ticket.participant_id = p.id ORDER BY p.created_at DESC, p.id DESC LIMIT 500");
+        $clientJoin = app_table_exists($pdo, 'agent_clients')
+            ? "LEFT JOIN (SELECT participant_id, COUNT(*) AS client_count FROM agent_clients GROUP BY participant_id) client ON client.participant_id = p.id"
+            : '';
+        $clientSelect = app_table_exists($pdo, 'agent_clients') ? 'COALESCE(client.client_count, 0)' : '0';
+
+        $participants = app_fetch_all($pdo, "SELECT p.id, p.name, p.phone, p.agency, p.status, p.created_at, COALESCE(pub.confirmed_count, 0) AS publications_confirmed, COALESCE(deal.confirmed_count, 0) AS deals_confirmed, COALESCE(ticket.ticket_count, 0) AS tickets_count, {$clientSelect} AS clients_count FROM participants p LEFT JOIN (SELECT participant_id, COUNT(DISTINCT publish_date) AS confirmed_count FROM publications WHERE status = 'confirmed' GROUP BY participant_id) pub ON pub.participant_id = p.id LEFT JOIN (SELECT participant_id, COUNT(*) AS confirmed_count FROM deals WHERE status = 'confirmed' GROUP BY participant_id) deal ON deal.participant_id = p.id LEFT JOIN (SELECT participant_id, COUNT(*) AS ticket_count FROM tickets GROUP BY participant_id) ticket ON ticket.participant_id = p.id {$clientJoin} ORDER BY p.created_at DESC, p.id DESC LIMIT 500");
+    }
+
+    $clients = [];
+    if (app_table_exists($pdo, 'agent_clients')) {
+        $clients = app_fetch_all($pdo, "SELECT c.id, c.participant_id, c.client_name, c.client_phone, c.comment, c.created_at, c.updated_at, p.name AS participant_name, p.phone AS participant_phone, p.agency AS participant_agency FROM agent_clients c INNER JOIN participants p ON p.id = c.participant_id ORDER BY c.created_at DESC, c.id DESC LIMIT 1000");
     }
 
     $subscriptionsPending = [];
@@ -127,6 +137,7 @@ try {
         ],
         'stats' => [
             'participants' => app_table_count_safe($pdo, 'participants'),
+            'clients_total' => app_table_count_safe($pdo, 'agent_clients'),
             'subscriptions_pending' => count($subscriptionsPending),
             'publications_pending' => count($publicationsPending),
             'deals_pending' => count($dealsPending),
@@ -134,6 +145,7 @@ try {
             'history_total' => count($subscriptionsHistory) + count($publicationsHistory) + count($dealsHistory),
         ],
         'participants' => $participants,
+        'clients' => $clients,
         'subscriptions' => $subscriptionsPending,
         'subscriptions_history' => $subscriptionsHistory,
         'publications' => $publicationsPending,
