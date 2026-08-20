@@ -6,6 +6,22 @@ app_require_method('POST');
 try {
     $pdo = db();
     app_ensure_core_schema($pdo);
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `agent_clients` (
+        `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+        `participant_id` bigint unsigned NOT NULL,
+        `client_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+        `client_phone` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+        `phone_digits` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+        `comment` text COLLATE utf8mb4_unicode_ci,
+        `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `uniq_agent_client_phone` (`phone_digits`),
+        KEY `idx_agent_client_participant` (`participant_id`),
+        KEY `idx_agent_client_created` (`created_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     $participant = app_current_participant($pdo);
     $participantId = (int)$participant['id'];
     $data = get_json_input();
